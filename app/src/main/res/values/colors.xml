@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primary_color">#6366F1</color>
+    <color name="primary_variant">#4F46E5</color>
+    <color name="secondary_color">#EC4899</color>
+    <color name="background_color">#F8FAFC</color>
+    <color name="text_main">#1E293B</color>
+    <color name="text_secondary">#64748B</color>
+
+    <color name="cat_button">#FBBF24</color>
+    <color name="joke_button">#34D399</color>
+    <color name="quote_button">#60A5FA</color>
 </resources>
