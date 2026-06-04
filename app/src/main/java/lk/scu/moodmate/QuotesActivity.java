@@ -1,3 +1,9 @@
+package lk.scu.moodmate;
+class QuotesActivity{
+
+}
+
+
 //package com.example.brainbreak;
 //
 //import android.content.Intent;
