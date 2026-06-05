@@ -1,6 +1,7 @@
 package lk.scu.moodmate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,10 +19,19 @@ public class login extends AppCompatActivity {
     private Button btnLogin;
     private TextView tvRegisterLink;
     private FirebaseFirestore db;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+        if (sharedPreferences.getBoolean("isLoggedIn", false)) {
+            startActivity(new Intent(login.this, MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         db = FirebaseFirestore.getInstance();
@@ -47,6 +57,12 @@ public class login extends AppCompatActivity {
                     .addOnSuccessListener(query -> {
                         if (!query.isEmpty()) {
                             DocumentSnapshot user = query.getDocuments().get(0);
+                            
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putBoolean("isLoggedIn", true);
+                            editor.putString("userEmail", email);
+                            editor.apply();
+
                             Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show();
                             // Redirect to MainActivity or Home
                             startActivity(new Intent(login.this, MainActivity.class));
