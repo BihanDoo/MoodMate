@@ -1,11 +1,12 @@
 package lk.scu.moodmate;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -88,10 +90,23 @@ public class Joke extends AppCompatActivity {
 
         apiService = retrofit.create(JokeApiService.class);
 
-        btnNewJoke.setOnClickListener(v -> fetchJoke());
+        btnNewJoke.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            fetchJoke();
+        });
         
-        btnLike.setOnClickListener(v -> saveInteraction("like"));
-        btnDislike.setOnClickListener(v -> saveInteraction("dislike"));
+        btnLike.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            v.setBackgroundColor(getResources().getColor(R.color.joke_button));
+            saveInteraction("like");
+        });
+
+        btnDislike.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            v.setBackgroundColor(Color.parseColor("#FF5252"));
+            btnDislike.setTextColor(Color.parseColor("#FFFFFF"));
+            saveInteraction("dislike");
+        });
 
         // Load the first joke
         fetchJoke();
@@ -121,7 +136,7 @@ public class Joke extends AppCompatActivity {
                     btnDislike.setEnabled(true);
                 } else {
                     tvSetup.setText("Oops! My funny bone is broken.");
-                    Toast.makeText(Joke.this, "Failed to get a joke", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.main), "Failed to get a joke", Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -130,7 +145,7 @@ public class Joke extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 btnNewJoke.setEnabled(true);
                 tvSetup.setText("Check your internet, no jokes today!");
-                Toast.makeText(Joke.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.main), "Error: " + t.getMessage(), Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -149,10 +164,30 @@ public class Joke extends AppCompatActivity {
         db.collection("interactions")
                 .add(interaction)
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(Joke.this, "Joke " + type + "d!", Toast.LENGTH_SHORT).show();
+                    View rootView = findViewById(R.id.main);
+                    if (rootView != null) {
+                        rootView.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                        Snackbar.make(rootView, "Joke " + type + "d!", Snackbar.LENGTH_SHORT)
+                                .setBackgroundTint(type.equals("like") ? 0xFF4CAF50 : 0xFFF44336)
+                                .setTextColor(0xFFFFFFFF)
+                                .show();
+                        btnLike.setBackgroundColor(Color.parseColor("#B1E978"));
+                        btnDislike.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        btnDislike.setTextColor(Color.parseColor("#FF5252"));
+                    }
+                    if (btnLike != null) {
+                        btnLike.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(Joke.this, "Failed to save reaction", Toast.LENGTH_SHORT).show();
+                    View rootView = findViewById(R.id.main);
+                    if (rootView != null) {
+                        rootView.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                        Snackbar.make(rootView, "Failed to save reaction", Snackbar.LENGTH_SHORT).show();
+                    }
+                    if (btnDislike != null) {
+                        btnDislike.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                    }
                 });
     }
 }
