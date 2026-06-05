@@ -15,120 +15,73 @@ import com.android.volley.toolbox.Volley;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.json.JSONException;
+import o```java
+private void saveQuoteToMongoDB() {
 
-import java.util.HashMap;
-import java.util.Map;
+    String url =
+            "YOUR_MONGODB_DATA_API_URL";
 
-public class QuotesActivity extends AppCompatActivity {
+    RequestQueue queue =
+            Volley.newRequestQueue(this);
 
-    TextView quoteText, authorText;
+    JSONObject data = new JSONObject();
 
-    Button newQuoteBtn, saveBtn, viewSavedBtn;
+    try {
 
-    FirebaseFirestore db;
+        data.put("collection", "favorite_quotes");
+        data.put("database", "BrainBreakDB");
+        data.put("dataSource", "Cluster0");
 
-    String currentQuote = "";
-    String currentAuthor = "";
+        JSONObject document =
+                new JSONObject();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quotes);
+        document.put("quote", currentQuote);
+        document.put("author", currentAuthor);
 
-        quoteText = findViewById(R.id.quoteText);
-        authorText = findViewById(R.id.authorText);
+        data.put("document", document);
 
-        newQuoteBtn = findViewById(R.id.newQuoteBtn);
-        saveBtn = findViewById(R.id.saveBtn);
-        viewSavedBtn = findViewById(R.id.viewSavedBtn);
-
-        db = FirebaseFirestore.getInstance();
-
-        loadQuote();
-
-        newQuoteBtn.setOnClickListener(v -> loadQuote());
-
-        saveBtn.setOnClickListener(v -> saveQuote());
-
-        viewSavedBtn.setOnClickListener(v -> {
-
-            Intent intent =
-                    new Intent(QuotesActivity.this,
-                            SavedQuotesActivity.class);
-
-            startActivity(intent);
-
-        });
+    } catch (JSONException e) {
+        e.printStackTrace();
     }
 
-    private void loadQuote() {
+    JsonObjectRequest request =
+            new JsonObjectRequest(
+                    Request.Method.POST,
+                    url,
+                    data,
 
-        String url = "https://zenquotes.io/api/random";
+                    response -> {
 
-        RequestQueue queue = Volley.newRequestQueue(this);
+                        Toast.makeText(this,
+                                "Quote Saved",
+                                Toast.LENGTH_SHORT).show();
 
-        JsonArrayRequest request =
-                new JsonArrayRequest(
-                        Request.Method.GET,
-                        url,
-                        null,
+                    },
 
-                        response -> {
+                    error -> {
 
-                            try {
+                        Toast.makeText(this,
+                                "Save Failed",
+                                Toast.LENGTH_SHORT).show();
 
-                                currentQuote =
-                                        response.getJSONObject(0)
-                                                .getString("q");
+                    }) {
 
-                                currentAuthor =
-                                        response.getJSONObject(0)
-                                                .getString("a");
+                @Override
+                public Map<String, String> getHeaders() {
 
-                                quoteText.setText(currentQuote);
+                    Map<String, String> headers =
+                            new HashMap<>();
 
-                                authorText.setText("- " + currentAuthor);
+                    headers.put("Content-Type",
+                            "application/json");
 
-                            } catch (JSONException e) {
+                    headers.put("api-key",
+                            "YOUR_API_KEY");
 
-                                e.printStackTrace();
-                            }
+                    return headers;
+                }
+            };
 
-                        },
-
-                        error -> Toast.makeText(this,
-                                "Failed to load quote",
-                                Toast.LENGTH_SHORT).show());
-
-        queue.add(request);
-    }
-
-    private void saveQuote() {
-
-        Map<String, Object> quote =
-                new HashMap<>();
-
-        quote.put("quote", currentQuote);
-        quote.put("author", currentAuthor);
-
-        db.collection("favorite_quotes")
-                .add(quote)
-                .addOnSuccessListener(documentReference -> {
-
-                    Toast.makeText(this,
-                            "Quote Saved",
-                            Toast.LENGTH_SHORT).show();
-
-                })
-
-                .addOnFailureListener(e -> {
-
-                    Toast.makeText(this,
-                            "Save Failed",
-                            Toast.LENGTH_SHORT).show();
-
-                });
-    }
+    queue.add(request);
 }
 
