@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintBottom_toTopOf="@+id/btnNewCat">
+        app:layout_constraintBottom_toTopOf="@+id/llActions">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -56,6 +56,39 @@
                 android:indeterminateTint="@color/cat_button" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/llActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnNewCat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLike"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Like"
+            app:icon="@android:drawable/btn_star_big_on"
+            app:strokeColor="@color/cat_button" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDislike"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Dislike"
+            app:icon="@android:drawable/ic_menu_close_clear_cancel"
+            app:strokeColor="#FF5252"
+            android:textColor="#FF5252"
+            app:iconTint="#FF5252"/>
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNewCat"
