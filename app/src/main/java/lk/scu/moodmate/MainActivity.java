@@ -35,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void onbtnfav(View view) {
+        Intent i = new Intent(this, Liked_favourites.class);
+        startActivity(i);
+    }
+
     public void onLogoutClick(View view) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
