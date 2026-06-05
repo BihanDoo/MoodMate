@@ -25,14 +25,15 @@
 
     <LinearLayout
         android:id="@+id/buttonContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="314dp"
+        android:layout_height="288dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/btnLogout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSlogan"
-        app:layout_constraintVertical_bias="0.45">
+        app:layout_constraintVertical_bias="0.386">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRandomCat"
@@ -78,19 +79,19 @@
             android:id="@+id/btnRandomQuote"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:backgroundTint="@android:color/transparent"
             android:background="@drawable/button_gradient_quote"
+            android:backgroundTint="@android:color/transparent"
             android:text="Random Quote"
             android:textAllCaps="false"
-            android:textSize="20sp"
             android:textColor="@color/white"
+            android:textSize="20sp"
             app:backgroundTint="@color/quote_button"
             app:cornerRadius="24dp"
+            app:elevation="8dp"
             app:icon="@android:drawable/ic_menu_edit"
             app:iconGravity="textStart"
             app:iconPadding="16dp"
-            app:iconSize="32dp"
-            app:elevation="8dp" />
+            app:iconSize="32dp" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton

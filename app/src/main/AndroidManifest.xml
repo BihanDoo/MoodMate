@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoodMate">
         <activity
+            android:name=".Liked_favourites"
+            android:exported="false" />
+        <activity
             android:name=".cat"
             android:exported="false" />
         <activity

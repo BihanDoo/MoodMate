@@ -1,5 +1,6 @@
 package lk.scu.moodmate;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -13,6 +14,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,8 +49,11 @@ public class Joke extends AppCompatActivity {
 
     private TextView tvSetup, tvPunchline;
     private ProgressBar progressBar;
-    private MaterialButton btnNewJoke;
+    private MaterialButton btnNewJoke, btnLike, btnDislike;
     private JokeApiService apiService;
+    private FirebaseFirestore db;
+    private String userEmail;
+    private String currentJokeSetup, currentJokePunchline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +66,13 @@ public class Joke extends AppCompatActivity {
         tvPunchline = findViewById(R.id.tvPunchline);
         progressBar = findViewById(R.id.jokeProgressBar);
         btnNewJoke = findViewById(R.id.btnNewJoke);
+        btnLike = findViewById(R.id.btnLike);
+        btnDislike = findViewById(R.id.btnDislike);
+
+        // Initialize Firestore and Session
+        db = FirebaseFirestore.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+        userEmail = sharedPreferences.getString("userEmail", "anonymous");
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -74,6 +89,9 @@ public class Joke extends AppCompatActivity {
         apiService = retrofit.create(JokeApiService.class);
 
         btnNewJoke.setOnClickListener(v -> fetchJoke());
+        
+        btnLike.setOnClickListener(v -> saveInteraction("like"));
+        btnDislike.setOnClickListener(v -> saveInteraction("dislike"));
 
         // Load the first joke
         fetchJoke();
@@ -85,6 +103,8 @@ public class Joke extends AppCompatActivity {
         tvPunchline.setText("");
         progressBar.setVisibility(View.VISIBLE);
         btnNewJoke.setEnabled(false);
+        btnLike.setEnabled(false);
+        btnDislike.setEnabled(false);
 
         apiService.getRandomJoke().enqueue(new Callback<JokeResponse>() {
             @Override
@@ -93,8 +113,12 @@ public class Joke extends AppCompatActivity {
                 btnNewJoke.setEnabled(true);
 
                 if (response.isSuccessful() && response.body() != null) {
-                    tvSetup.setText(response.body().getSetup());
-                    tvPunchline.setText(response.body().getPunchline());
+                    currentJokeSetup = response.body().getSetup();
+                    currentJokePunchline = response.body().getPunchline();
+                    tvSetup.setText(currentJokeSetup);
+                    tvPunchline.setText(currentJokePunchline);
+                    btnLike.setEnabled(true);
+                    btnDislike.setEnabled(true);
                 } else {
                     tvSetup.setText("Oops! My funny bone is broken.");
                     Toast.makeText(Joke.this, "Failed to get a joke", Toast.LENGTH_SHORT).show();
@@ -109,5 +133,26 @@ public class Joke extends AppCompatActivity {
                 Toast.makeText(Joke.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void saveInteraction(String type) {
+        if (currentJokeSetup == null || userEmail == null) return;
+
+        Map<String, Object> interaction = new HashMap<>();
+        interaction.put("userEmail", userEmail);
+        interaction.put("type", type);
+        interaction.put("contentType", "joke");
+        interaction.put("setup", currentJokeSetup);
+        interaction.put("punchline", currentJokePunchline);
+        interaction.put("timestamp", System.currentTimeMillis());
+
+        db.collection("interactions")
+                .add(interaction)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(Joke.this, "Joke " + type + "d!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(Joke.this, "Failed to save reaction", Toast.LENGTH_SHORT).show();
+                });
     }
 }

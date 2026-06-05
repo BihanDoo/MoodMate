@@ -1,5 +1,6 @@
 package lk.scu.moodmate;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,8 +16,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,8 +49,11 @@ public class cat extends AppCompatActivity {
 
     private ImageView ivCat;
     private ProgressBar progressBar;
-    private MaterialButton btnNewCat;
+    private MaterialButton btnNewCat, btnLike, btnDislike;
     private CatApiService apiService;
+    private FirebaseFirestore db;
+    private String userEmail;
+    private String currentImageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +65,13 @@ public class cat extends AppCompatActivity {
         ivCat = findViewById(R.id.ivCat);
         progressBar = findViewById(R.id.progressBar);
         btnNewCat = findViewById(R.id.btnNewCat);
+        btnLike = findViewById(R.id.btnLike);
+        btnDislike = findViewById(R.id.btnDislike);
+
+        // Initialize Firestore and Session
+        db = FirebaseFirestore.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+        userEmail = sharedPreferences.getString("userEmail", "anonymous");
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -74,6 +88,8 @@ public class cat extends AppCompatActivity {
         apiService = retrofit.create(CatApiService.class);
 
         btnNewCat.setOnClickListener(v -> fetchCatImage());
+        btnLike.setOnClickListener(v -> saveInteraction("like"));
+        btnDislike.setOnClickListener(v -> saveInteraction("dislike"));
 
         // Load initial image
         fetchCatImage();
@@ -82,6 +98,8 @@ public class cat extends AppCompatActivity {
     private void fetchCatImage() {
         progressBar.setVisibility(View.VISIBLE);
         btnNewCat.setEnabled(false);
+        btnLike.setEnabled(false);
+        btnDislike.setEnabled(false);
 
         apiService.getRandomCat().enqueue(new Callback<List<CatImage>>() {
             @Override
@@ -90,12 +108,14 @@ public class cat extends AppCompatActivity {
                 btnNewCat.setEnabled(true);
 
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    String imageUrl = response.body().get(0).getUrl();
+                    currentImageUrl = response.body().get(0).getUrl();
                     Glide.with(cat.this)
-                            .load(imageUrl)
+                            .load(currentImageUrl)
                             .transition(DrawableTransitionOptions.withCrossFade())
                             .placeholder(R.drawable.ic_launcher_background)
                             .into(ivCat);
+                    btnLike.setEnabled(true);
+                    btnDislike.setEnabled(true);
                 } else {
                     Toast.makeText(cat.this, "Failed to load cat image", Toast.LENGTH_SHORT).show();
                 }
@@ -108,5 +128,25 @@ public class cat extends AppCompatActivity {
                 Toast.makeText(cat.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void saveInteraction(String type) {
+        if (currentImageUrl == null || userEmail == null) return;
+
+        Map<String, Object> interaction = new HashMap<>();
+        interaction.put("userEmail", userEmail);
+        interaction.put("type", type);
+        interaction.put("contentType", "cat");
+        interaction.put("imageUrl", currentImageUrl);
+        interaction.put("timestamp", System.currentTimeMillis());
+
+        db.collection("interactions")
+                .add(interaction)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(cat.this, "Cat image " + type + "d!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(cat.this, "Failed to save reaction", Toast.LENGTH_SHORT).show();
+                });
     }
 }
