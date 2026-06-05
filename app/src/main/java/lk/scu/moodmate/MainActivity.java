@@ -1,6 +1,8 @@
 package lk.scu.moodmate;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +11,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+
+    Intent i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +24,16 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+
+
+
+
+    public void onbtncatclick(View view) {
+        Intent i = new Intent();
+        i.setClass(this, cat.class);
+        startActivity(i);
+
     }
 }

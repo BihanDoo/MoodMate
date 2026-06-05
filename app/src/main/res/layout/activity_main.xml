@@ -19,8 +19,9 @@
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="262dp" />
+        tools:layout_editor_absoluteY="271dp" />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -38,19 +39,20 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="@android:color/transparent"
             android:background="@drawable/button_gradient_cat"
+            android:backgroundTint="@android:color/transparent"
+            android:onClick="onbtncatclick"
             android:text="Random Cat"
             android:textAllCaps="false"
-            android:textSize="20sp"
             android:textColor="@color/white"
-            app:cornerRadius="24dp"
+            android:textSize="20sp"
             app:backgroundTint="@color/cat_button"
+            app:cornerRadius="24dp"
+            app:elevation="8dp"
             app:icon="@android:drawable/ic_menu_gallery"
             app:iconGravity="textStart"
             app:iconPadding="16dp"
-            app:iconSize="32dp"
-            app:elevation="8dp" />
+            app:iconSize="32dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRandomJoke"
@@ -108,7 +110,7 @@
         android:id="@+id/imageView"
         android:layout_width="188dp"
         android:layout_height="217dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

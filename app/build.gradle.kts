@@ -1,7 +1,5 @@
 plugins {
-
     alias(libs.plugins.android.application)
-
     id("com.google.gms.google-services")
 }
 
@@ -45,6 +43,12 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.google.firebase.firestore)
+    
+    // API and Image loading for cat api
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.glide)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
