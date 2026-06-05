@@ -74,7 +74,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="Like"
+            android:textColor="#673AB7"
+            app:backgroundTint="#B1E978"
             app:icon="@android:drawable/btn_star_big_on"
+            app:iconTint="#673AB7"
             app:strokeColor="@color/cat_button" />
 
         <com.google.android.material.button.MaterialButton

@@ -1,7 +1,10 @@
 package lk.scu.moodmate;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -16,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -54,6 +58,7 @@ public class cat extends AppCompatActivity {
     private FirebaseFirestore db;
     private String userEmail;
     private String currentImageUrl;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +72,8 @@ public class cat extends AppCompatActivity {
         btnNewCat = findViewById(R.id.btnNewCat);
         btnLike = findViewById(R.id.btnLike);
         btnDislike = findViewById(R.id.btnDislike);
+
+        ivCat.setImageDrawable(getResources().getDrawable(R.drawable.background_17));
 
         // Initialize Firestore and Session
         db = FirebaseFirestore.getInstance();
@@ -87,9 +94,23 @@ public class cat extends AppCompatActivity {
 
         apiService = retrofit.create(CatApiService.class);
 
-        btnNewCat.setOnClickListener(v -> fetchCatImage());
-        btnLike.setOnClickListener(v -> saveInteraction("like"));
-        btnDislike.setOnClickListener(v -> saveInteraction("dislike"));
+        btnNewCat.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            fetchCatImage();
+        });
+
+        btnLike.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            v.setBackgroundColor(getResources().getColor(R.color.cat_button));
+            saveInteraction("like");
+        });
+
+        btnDislike.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            v.setBackgroundColor(Color.parseColor("#FF5252"));
+            btnDislike.setTextColor(Color.parseColor("#FFFFFF"));
+            saveInteraction("dislike");
+        });
 
         // Load initial image
         fetchCatImage();
@@ -104,28 +125,41 @@ public class cat extends AppCompatActivity {
         apiService.getRandomCat().enqueue(new Callback<List<CatImage>>() {
             @Override
             public void onResponse(Call<List<CatImage>> call, Response<List<CatImage>> response) {
-                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
                 btnNewCat.setEnabled(true);
 
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     currentImageUrl = response.body().get(0).getUrl();
+                    
+                    // Preload the image to improve smoothness
                     Glide.with(cat.this)
                             .load(currentImageUrl)
+                            .placeholder(R.drawable.background_17)
                             .transition(DrawableTransitionOptions.withCrossFade())
-                            .placeholder(R.drawable.ic_launcher_background)
+                            .thumbnail(Glide.with(cat.this).load(currentImageUrl).sizeMultiplier(0.1f))
                             .into(ivCat);
+
                     btnLike.setEnabled(true);
                     btnDislike.setEnabled(true);
+
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        progressBar.setVisibility(View.GONE);
+                    }, 1500);
                 } else {
-                    Toast.makeText(cat.this, "Failed to load cat image", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.main), "Failed to load cat image", Snackbar.LENGTH_SHORT).show();
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        progressBar.setVisibility(View.GONE);
+                    }, 1000);
                 }
             }
 
             @Override
             public void onFailure(Call<List<CatImage>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                    progressBar.setVisibility(View.GONE);
+                }, 1000);
                 btnNewCat.setEnabled(true);
-                Toast.makeText(cat.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.main), "Network Error: " + t.getMessage(), Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -143,10 +177,32 @@ public class cat extends AppCompatActivity {
         db.collection("interactions")
                 .add(interaction)
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(cat.this, "Cat image " + type + "d!", Toast.LENGTH_SHORT).show();
+                    // Success feedback: Haptic + Snackbar
+                    View rootView = findViewById(R.id.main);
+
+                    if (rootView != null) {
+                        rootView.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                        Snackbar.make(rootView, "Cat image " + type + "d!", Snackbar.LENGTH_SHORT)
+                                .setBackgroundTint(type.equals("like") ? 0xFF4CAF50 : 0xFFF44336)
+                                .setTextColor(0xFFFFFFFF)
+                                .show();
+                        btnLike.setBackgroundColor(Color.parseColor("#B1E978"));
+                        btnDislike.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        btnDislike.setTextColor(Color.parseColor("#FF5252"));
+                    }
+                    if (btnLike != null) {
+                        btnLike.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(cat.this, "Failed to save reaction", Toast.LENGTH_SHORT).show();
+                    View rootView = findViewById(R.id.main);
+                    if (rootView != null) {
+                        rootView.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                        Snackbar.make(rootView, "Failed to save reaction", Snackbar.LENGTH_SHORT).show();
+                    }
+                    if (btnDislike != null) {
+                        btnDislike.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                    }
                 });
     }
 }
