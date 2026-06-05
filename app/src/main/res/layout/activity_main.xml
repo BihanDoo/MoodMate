@@ -82,6 +82,7 @@
             android:layout_marginBottom="12dp"
             android:background="@drawable/button_gradient_quote"
             android:backgroundTint="@android:color/transparent"
+            android:onClick="quoteonclick"
             android:text="Random Quote"
             android:textAllCaps="false"
             android:textColor="@color/white"

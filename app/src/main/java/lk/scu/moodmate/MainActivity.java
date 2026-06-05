@@ -50,4 +50,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    public void quoteonclick(View view) {
+        Intent i = new Intent(this, QuotesActivity.class);
+        startActivity(i);
+    }
 }
