@@ -14,6 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoodMate">
         <activity
+            android:name=".QuotesActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".Liked_favourites"
             android:exported="false" />
         <activity
@@ -37,10 +41,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".QuotesActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
