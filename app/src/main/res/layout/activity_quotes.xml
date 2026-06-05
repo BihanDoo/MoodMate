@@ -1,0 +1,48 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/quoteText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quote"
+        android:textSize="22sp"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/authorText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Author"
+        android:textSize="18sp"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/newQuoteBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Quote"/>
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Quote"/>
+
+    <Button
+        android:id="@+id/viewSavedBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Saved Quotes"/>
+
+</LinearLayout>
+
+
