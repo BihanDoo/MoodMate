@@ -36,4 +36,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
 
     }
+
+    public void onbtnjoke(View view) {
+        Intent i = new Intent();
+        i.setClass(this, Joke.class);
+        startActivity(i);
+    }
 }
