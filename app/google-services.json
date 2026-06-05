@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "716988086639",
+    "project_id": "studyfellows-3e1e0",
+    "storage_bucket": "studyfellows-3e1e0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716988086639:android:249bd516b1d62e0fe4109a",
+        "android_client_info": {
+          "package_name": "lk.scu.moodmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzH4hXgU1U56vmNeXkq5KWclEafMGJjvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
