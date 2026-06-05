@@ -1,4 +1,4 @@
-package com.example.brainbreak;
+package lk.scu.moodmate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,9 +29,21 @@ public class QuotesActivity extends AppCompatActivity {
     String currentQuote = "";
     String currentAuthor = "";
 
+    RequestQueue queue;
+
+    // REPLACE WITH YOUR REAL MONGODB DATA API URL
+    private final String mongoURL =
+            "https://YOUR_APP_ID.mongodb-api.com/app/data-xxxxx/endpoint/data/v1/action/insertOne";
+
+    // REPLACE WITH YOUR REAL API KEY
+    private final String apiKey =
+            "YOUR_API_KEY";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_quotes);
 
         quoteText = findViewById(R.id.quoteText);
@@ -40,6 +52,8 @@ public class QuotesActivity extends AppCompatActivity {
         newQuoteBtn = findViewById(R.id.newQuoteBtn);
         saveBtn = findViewById(R.id.saveBtn);
         viewSavedBtn = findViewById(R.id.viewSavedBtn);
+
+        queue = Volley.newRequestQueue(this);
 
         loadQuote();
 
@@ -63,9 +77,6 @@ public class QuotesActivity extends AppCompatActivity {
         String url =
                 "https://zenquotes.io/api/random";
 
-        RequestQueue queue =
-                Volley.newRequestQueue(this);
-
         JsonArrayRequest request =
                 new JsonArrayRequest(
                         Request.Method.GET,
@@ -76,13 +87,14 @@ public class QuotesActivity extends AppCompatActivity {
 
                             try {
 
+                                JSONObject quoteObject =
+                                        response.getJSONObject(0);
+
                                 currentQuote =
-                                        response.getJSONObject(0)
-                                                .getString("q");
+                                        quoteObject.getString("q");
 
                                 currentAuthor =
-                                        response.getJSONObject(0)
-                                                .getString("a");
+                                        quoteObject.getString("a");
 
                                 quoteText.setText(currentQuote);
 
@@ -90,25 +102,36 @@ public class QuotesActivity extends AppCompatActivity {
 
                             } catch (JSONException e) {
 
-                                e.printStackTrace();
+                                Toast.makeText(
+                                        this,
+                                        "JSON Error",
+                                        Toast.LENGTH_SHORT
+                                ).show();
                             }
 
                         },
 
-                        error -> Toast.makeText(this,
+                        error -> Toast.makeText(
+                                this,
                                 "Failed To Load Quote",
-                                Toast.LENGTH_SHORT).show());
+                                Toast.LENGTH_SHORT
+                        ).show());
 
         queue.add(request);
     }
 
     private void saveQuoteToMongoDB() {
 
-        String url =
-                "https://YOUR_DATA_API_URL/action/insertOne";
+        if(currentQuote.isEmpty()) {
 
-        RequestQueue queue =
-                Volley.newRequestQueue(this);
+            Toast.makeText(
+                    this,
+                    "No Quote To Save",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
 
         JSONObject data = new JSONObject();
 
@@ -143,16 +166,20 @@ public class QuotesActivity extends AppCompatActivity {
         JsonObjectRequest request =
                 new JsonObjectRequest(
                         Request.Method.POST,
-                        url,
+                        mongoURL,
                         data,
 
-                        response -> Toast.makeText(this,
-                                "Quote Saved",
-                                Toast.LENGTH_SHORT).show(),
+                        response -> Toast.makeText(
+                                this,
+                                "Quote Saved Successfully",
+                                Toast.LENGTH_SHORT
+                        ).show(),
 
-                        error -> Toast.makeText(this,
-                                "Save Failed",
-                                Toast.LENGTH_SHORT).show()) {
+                        error -> Toast.makeText(
+                                this,
+                                "Failed To Save Quote",
+                                Toast.LENGTH_SHORT
+                        ).show()) {
 
                     @Override
                     public Map<String, String> getHeaders() {
@@ -160,11 +187,15 @@ public class QuotesActivity extends AppCompatActivity {
                         Map<String, String> headers =
                                 new HashMap<>();
 
-                        headers.put("Content-Type",
-                                "application/json");
+                        headers.put(
+                                "Content-Type",
+                                "application/json"
+                        );
 
-                        headers.put("api-key",
-                                "YOUR_API_KEY");
+                        headers.put(
+                                "api-key",
+                                apiKey
+                        );
 
                         return headers;
                     }
@@ -173,5 +204,3 @@ public class QuotesActivity extends AppCompatActivity {
         queue.add(request);
     }
 }
-
-
