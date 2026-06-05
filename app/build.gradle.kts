@@ -44,7 +44,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.google.firebase.firestore)
     
-    // API and Image loading for cat api
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.glide)
