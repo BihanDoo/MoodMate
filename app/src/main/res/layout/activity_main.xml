@@ -10,42 +10,18 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tvEmoji"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text="✨"
-        android:textSize="64sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif-black"
-        android:text="MoodMate"
-        android:textColor="@color/text_main"
-        android:textSize="42sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvEmoji" />
-
-    <TextView
         android:id="@+id/tvSlogan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.05"
         android:text="An App to Cure Boredom"
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
-        android:letterSpacing="0.05"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -63,36 +39,40 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="@android:color/transparent"
             android:background="@drawable/button_gradient_cat"
+            android:backgroundTint="@android:color/transparent"
+            android:onClick="onbtncatclick"
             android:text="Random Cat"
             android:textAllCaps="false"
-            android:textSize="20sp"
             android:textColor="@color/white"
+            android:textSize="20sp"
+            app:backgroundTint="@color/cat_button"
             app:cornerRadius="24dp"
+            app:elevation="8dp"
             app:icon="@android:drawable/ic_menu_gallery"
             app:iconGravity="textStart"
             app:iconPadding="16dp"
-            app:iconSize="32dp"
-            app:elevation="8dp" />
+            app:iconSize="32dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRandomJoke"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="@android:color/transparent"
             android:background="@drawable/button_gradient_joke"
+            android:backgroundTint="@android:color/transparent"
+            android:onClick="onbtnjoke"
             android:text="Random Joke"
             android:textAllCaps="false"
-            android:textSize="20sp"
             android:textColor="@color/white"
+            android:textSize="20sp"
+            app:backgroundTint="@color/joke_button"
             app:cornerRadius="24dp"
+            app:elevation="8dp"
             app:icon="@android:drawable/btn_star_big_on"
             app:iconGravity="textStart"
             app:iconPadding="16dp"
-            app:iconSize="32dp"
-            app:elevation="8dp" />
+            app:iconSize="32dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRandomQuote"
@@ -104,6 +84,7 @@
             android:textAllCaps="false"
             android:textSize="20sp"
             android:textColor="@color/white"
+            app:backgroundTint="@color/quote_button"
             app:cornerRadius="24dp"
             app:icon="@android:drawable/ic_menu_edit"
             app:iconGravity="textStart"
@@ -125,5 +106,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="188dp"
+        android:layout_height="217dp"
+        android:layout_marginTop="52dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
